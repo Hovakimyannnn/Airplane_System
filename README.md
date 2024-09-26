@@ -66,6 +66,6 @@ To get started with the implementations in this repository:
 
 1. **Clone the repository**: `git clone https://github.com/Hovakimyannnn/Airplane_System.git`
 2. **Navigate to the directory**: `cd Airplane_System`
-3. **Compile the code**: `gcc server.c -o server` and `gcc client.c -o client`
+3. **Compile the code**: `cd server` ` gcc server.c -o server` and `cd client` `gcc client.c -o client`
 4. **Run the code**: The first run server code `./server` then ran client code `./client`
 5. **Experiment**: Modify the code, add your own implementations, and test different scenarios.

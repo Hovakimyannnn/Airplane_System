@@ -1,4 +1,4 @@
-#include "include.h"
+#include "../includes/include.h"
 
 void* write_thr(void* arg) {
     char buffer[BUFFER_SIZE];

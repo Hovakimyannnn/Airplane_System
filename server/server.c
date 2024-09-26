@@ -1,4 +1,4 @@
-#include "include.h"
+#include "../includes/include.h"
 
 
 void* thread_func(void* arg) {
@@ -46,7 +46,7 @@ void login_user(ThreadArg* arg) {
     memset(buffer, 0, BUFFER_SIZE);
     snprintf(buffer, BUFFER_SIZE, "Enter your password: ");
     send(arg->client_fd, buffer, BUFFER_SIZE, 0);
-    int recv_bytes = recv(arg->client_fd, arg->client.data.password, PASS_LEN, 0);
+    recv_bytes = recv(arg->client_fd, arg->client.data.password, PASS_LEN, 0);
     if (recv_bytes > 0) {
         arg->client.data.password[recv_bytes] = '\0';
     }
@@ -81,7 +81,7 @@ void register_user(ThreadArg* arg) {
     memset(buffer, 0, BUFFER_SIZE);
     snprintf(buffer, BUFFER_SIZE, "Enter your login: ");
     send(arg->client_fd, buffer, BUFFER_SIZE, 0);
-    int recv_bytes = recv(arg->client_fd, arg->client.data.login, NAME_MAX_LEN, 0);
+    recv_bytes = recv(arg->client_fd, arg->client.data.login, NAME_MAX_LEN, 0);
     if (recv_bytes > 0) {
         arg->client.data.login[recv_bytes] = '\0';
     }
@@ -135,6 +135,12 @@ int check_correctness(Client_info info) {
     char buffer[BUFFER_SIZE];
     Client_info data;
     fseek(database, 0, SEEK_SET);
+    int database_fd = fileno(database);
+    if (posix_fadvise(database_fd, 0, 0, POSIX_FADV_SEQUENTIAL) != 0) {
+        perror("posix_fadvise");
+        fclose(database);
+        exit(EXIT_FAILURE);
+    }
     while (fread(&data, sizeof(data), 1, database) > 0) {
         if (strcmp(info.login, data.login) == 0 && strcmp(info.password, data.password) == 0) {
             pthread_mutex_unlock(&mutex);
@@ -381,8 +387,8 @@ void write_in_flight_database(Flight* new_flight)
 
 int main() {
     struct sockaddr_in server_struct, client_struct;
-    database = fopen("database.txt", "r+");
-    flight_database = fopen("flight_database.txt", "r+");
+    database = fopen("../databases/database.txt", "r+");
+    flight_database = fopen("../databases/flight_database.txt", "r+");
     if (!database || !flight_database) {
         perror("Error opening file");
         exit(EXIT_FAILURE);
